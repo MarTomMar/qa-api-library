@@ -1,0 +1,9 @@
+$kind: http-request
+name: 3. GET /profile (Authenticated)
+url: "{{baseUrl}}/api/v1/profile"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{authToken}}"
+order: 3000

@@ -1,0 +1,30 @@
+$kind: http-request
+name: 1. POST /register (Dynamic Setup)
+url: "{{baseUrl}}/api/v1/register"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+        "email": "{{current_test_email}}",
+        "password": "{{current_test_password}}"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      const randomInt = Math.floor(Math.random() * 100000);
+      const email = `main_flow_${randomInt}@nordvpn-test.com`;
+      const password = `ValidPass!${randomInt}`;
+
+      pm.collectionVariables.set("current_test_email", email);
+      pm.collectionVariables.set("current_test_password", password);
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test("Vartotojas sėkmingai sukurtas", function () {
+          pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+      });
+    language: text/javascript
+order: 1000

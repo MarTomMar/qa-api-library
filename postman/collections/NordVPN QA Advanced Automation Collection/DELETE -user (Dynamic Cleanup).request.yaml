@@ -1,0 +1,39 @@
+$kind: http-request
+name: DELETE /user (Dynamic Cleanup)
+url: "{{baseUrl}}/api/v1/user"
+method: DELETE
+auth:
+  type: bearer
+  credentials:
+    token: "{{activeCleanupToken}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      let queue = pm.collectionVariables.get("tokensToDelete");
+      queue = queue ? JSON.parse(queue) : [];
+
+      if (queue.length > 0) {
+          pm.test(`Vartotojas sėkmingai išvalytas. Liko eilėje: ${queue.length - 1}`, function () {
+              pm.expect(pm.response.code).to.be.oneOf([200, 204]);
+          });
+          
+          queue.shift();
+          pm.collectionVariables.set("tokensToDelete", JSON.stringify(queue));
+          
+          if (queue.length > 0) {
+              pm.execution.setNextRequest(pm.info.requestId);
+          } else {
+              pm.collectionVariables.unset("current_test_email");
+              pm.collectionVariables.unset("current_test_password");
+              pm.collectionVariables.unset("ep_valid_email");
+              pm.collectionVariables.unset("bva8_email");
+              pm.collectionVariables.unset("bva20_email");
+              pm.collectionVariables.unset("authToken");
+              pm.collectionVariables.unset("tokensToDelete");
+              console.log("Teardown baigtas. Visi testiniai vartotojai pašalinti iš DB, kintamieji išvalyti.");
+          }
+      } else {
+          console.log("Išvalymo eilė tuščia. Užklausa praleidžiama.");
+      }
+    language: text/javascript
+order: 5000

@@ -1,0 +1,20 @@
+$kind: http-request
+url: "{{baseUrl}}/api/v1/register"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+        "email": "bva21@nordvpn-test.com",
+        "password": "123456789012345678901"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Riba + 1: Slaptažodis per ilgas", function () {
+          pm.expect(pm.response.code).to.equal(400);
+      });
+    language: text/javascript
+order: 4000

@@ -1,0 +1,27 @@
+$kind: http-request
+name: 2. POST /login (Token Chaining)
+url: "{{baseUrl}}/api/v1/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+        "email": "{{current_test_email}}",
+        "password": "{{current_test_password}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      const responseData = pm.response.json();
+      if (responseData.token) {
+          pm.collectionVariables.set("authToken", responseData.token);
+          
+          let queue = pm.collectionVariables.get("tokensToDelete");
+          queue = queue ? JSON.parse(queue) : [];
+          queue.push(responseData.token);
+          pm.collectionVariables.set("tokensToDelete", JSON.stringify(queue));
+      }
+    language: text/javascript
+order: 2000

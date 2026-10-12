@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/api/v1/profile"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.FakeTokenHere.SignatureCorrupted
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Sugadintas tokenas atmetamas su 401", function () {
+          pm.expect(pm.response.code).to.equal(401);
+      });
+    language: text/javascript
+order: 3000

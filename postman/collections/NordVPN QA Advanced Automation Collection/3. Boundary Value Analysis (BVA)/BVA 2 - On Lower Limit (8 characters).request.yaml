@@ -1,0 +1,29 @@
+$kind: http-request
+url: "{{baseUrl}}/api/v1/register"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+        "email": "{{bva8_email}}",
+        "password": "12345678"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      const randomInt = Math.floor(Math.random() * 100000);
+      pm.collectionVariables.set("bva8_email", `bva8_${randomInt}@nordvpn-test.com`);
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      const responseData = pm.response.json();
+      if (responseData.token) {
+          let queue = pm.collectionVariables.get("tokensToDelete");
+          queue = queue ? JSON.parse(queue) : [];
+          queue.push(responseData.token);
+          pm.collectionVariables.set("tokensToDelete", JSON.stringify(queue));
+      }
+    language: text/javascript
+order: 2000

@@ -1,0 +1,38 @@
+$kind: collection
+description: Profesionali Postman kolekcija techniniam interviu. Apima EP, BVA, Error Guessing metodikas, dinaminius duomenis ir automatinį sėkmingai sukurtų vartotojų išvalymą (Teardown Loop).
+variables:
+  baseUrl: https://api.example.com
+  current_test_email: ""
+  current_test_password: ""
+  authToken: ""
+  tokensToDelete: ""
+  activeCleanupToken: ""
+  ep_valid_email: ""
+  bva8_email: ""
+  bva20_email: ""
+scripts:
+  - type: http:beforeRequest
+    code: |-
+      let queue = pm.collectionVariables.get("tokensToDelete");
+      if (queue) {
+          queue = JSON.parse(queue);
+          if (queue.length > 0) {
+              pm.collectionVariables.set("activeCleanupToken", queue[0]);
+          }
+      }
+    language: text/javascript
+  - type: http:afterResponse
+    code: |-
+      const currentRequest = pm.info.requestName;
+      const isErrorTest = currentRequest.includes("Invalid") || currentRequest.includes("Limit") || currentRequest.includes("Missing") || currentRequest.includes("Injection") || currentRequest.includes("Manipulation");
+
+      if (!isErrorTest) {
+          pm.test("Globalus automatinis sėkmės patikrinimas", function () {
+              pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);
+          });
+          
+          pm.test("Atsakymo laikas priimtinas (< 2000ms)", function () {
+              pm.expect(pm.response.responseTime).to.be.below(2000);
+          });
+      }
+    language: text/javascript

@@ -1,0 +1,20 @@
+$kind: http-request
+url: "{{baseUrl}}/api/v1/register"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+        "email": "invalidemailformat.com",
+        "password": "ValidPassword123!"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test("Atmetama su 400 dėl el. pašto formato", function () {
+          pm.expect(pm.response.code).to.equal(400);
+      });
+    language: text/javascript
+order: 3000
