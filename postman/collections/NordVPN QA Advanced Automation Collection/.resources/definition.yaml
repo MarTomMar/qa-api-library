@@ -1,5 +1,5 @@
 $kind: collection
-description: Profesionali Postman kolekcija techniniam interviu. Apima EP, BVA, Error Guessing metodikas, dinaminius duomenis ir automatinį sėkmingai sukurtų vartotojų išvalymą (Teardown Loop).
+description: Profesionali Postman kolekcija techniniam interviu... Apima EP, BVA, Error Guessing metodikas, dinaminius duomenis ir automatinį sėkmingai sukurtų vartotojų išvalymą (Teardown Loop).
 variables:
   baseUrl: https://api.example.com
   current_test_email: ""
